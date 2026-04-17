@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="auth">
+  <h2>ログイン</h2>
+  <input id="user" placeholder="ユーザー名">
+  <input id="pass" type="password" placeholder="パスワード">
+  <button onclick="login()">ログイン</button>
+  <button onclick="register()">新規登録</button>
+</div>
+
+<div id="app" style="display:none">
+  <h3>タイムライン</h3>
+
+  <select id="classFilter" onchange="loadPosts()">
+    <option value="all">全体</option>
+    <option value="A">A組</option>
+    <option value="B">B組</option>
+  </select>
+
+  <div id="posts"></div>
+
+  <div class="postbox">
+    <input id="content" placeholder="投稿する">
+    <select id="class">
+      <option value="A">A組</option>
+      <option value="B">B組</option>
+    </select>
+    <button onclick="post()">送信</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
