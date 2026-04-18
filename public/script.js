@@ -14,7 +14,7 @@ async function register(){
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({username:user.value,password:pass.value})
   });
-  alert("OK");
+  alert("登録OK");
 }
 
 async function logout(){
@@ -32,12 +32,15 @@ async function init(){
   }
 }
 
-// ===== TL =====
+// ===== ホーム =====
 async function loadHome(){
   const r=await fetch("/timeline");
   const d=await r.json();
 
   home.innerHTML = `
+    <button onclick="loadHome()">ホーム</button>
+    <button onclick="loadNotifications()">通知</button>
+
     <input id="postInput">
     <input type="file" id="fileInput">
     <button onclick="post()">投稿</button>
@@ -109,23 +112,38 @@ async function openProfile(id){
   const d=await r.json();
 
   home.innerHTML=`
-    <img src="${d.user.icon||'https://placehold.co/80'}" width="80"><br>
-    <h2>${d.user.username}</h2>
-    ${d.user.bio}<br>
+    <div class="profile">
+      <div class="cover"></div>
 
-    <button onclick="follow(${d.user.id})">
-      ${d.isFollowing?"解除":"フォロー"}
-    </button>
+      <div class="profile-main">
+        <img class="icon" src="${d.user.icon||'https://placehold.co/80'}">
 
-    ${me.id==d.user.id?`
-      <input id="bio" value="${d.user.bio}">
-      <input id="icon" value="${d.user.icon}">
-      <button onclick="saveProfile()">保存</button>
-    `:""}
+        <div class="profile-info">
+          <h2>${d.user.username}</h2>
+          <div class="bio">${d.user.bio||""}</div>
 
-    <hr>
+          <div class="follow-info">
+            ${d.followers} フォロワー / ${d.following} フォロー
+          </div>
 
-    ${d.posts.map(p=>`<div class="post">${p.content}</div>`).join("")}
+          ${
+            me.id==d.user.id
+            ? `<input id="bio" value="${d.user.bio}">
+               <input id="icon" value="${d.user.icon}">
+               <button onclick="saveProfile()">保存</button>`
+            : `<button onclick="follow(${d.user.id})">
+                 ${d.isFollowing?"解除":"フォロー"}
+               </button>`
+          }
+        </div>
+      </div>
+
+      <hr>
+
+      ${d.posts.map(p=>`
+        <div class="post">${p.content}</div>
+      `).join("")}
+    </div>
   `;
 }
 
@@ -144,6 +162,22 @@ async function follow(id){
     body:JSON.stringify({userId:id})
   });
   openProfile(id);
+}
+
+// ===== 通知 =====
+async function loadNotifications(){
+  const r=await fetch("/notifications");
+  const d=await r.json();
+
+  home.innerHTML = `
+    <button onclick="loadHome()">ホーム</button>
+    <h2>通知</h2>
+    ${d.map(n=>{
+      if(n.type==="like") return `<div>❤️ ${n.username} がいいね</div>`;
+      if(n.type==="follow") return `<div>➕ ${n.username} がフォロー</div>`;
+      if(n.type==="reply") return `<div>💬 ${n.username} が返信</div>`;
+    }).join("")}
+  `;
 }
 
 init();

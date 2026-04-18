@@ -8,7 +8,7 @@ const multer = require("multer");
 const app = express();
 const db = new sqlite3.Database("db.sqlite");
 
-// ===== 画像保存 =====
+// ===== 画像 =====
 const storage = multer.diskStorage({
   destination: "public/uploads/",
   filename: (req, file, cb) => {
@@ -27,10 +27,7 @@ app.use(session({
 }));
 
 app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", (req,res)=>{
-  res.sendFile(path.join(__dirname,"public/index.html"));
-});
+app.get("/", (req,res)=>res.sendFile(path.join(__dirname,"public/index.html")));
 
 // ===== DB =====
 db.serialize(()=>{
@@ -66,18 +63,27 @@ db.serialize(()=>{
     UNIQUE(follower_id, following_id)
   )`);
 
+  db.run(`CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    from_user INTEGER,
+    type TEXT,
+    post_id INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
 });
 
 // ===== AUTH =====
 app.post("/register", async (req,res)=>{
   if(!req.body.username || !req.body.password)
-    return res.status(400).send("入力不足");
+    return res.status(400).send("NG");
 
   const hash = await bcrypt.hash(req.body.password,10);
 
   db.run("INSERT INTO users (username,password) VALUES (?,?)",
     [req.body.username, hash],
-    err=> err ? res.status(400).send("ユーザー重複") : res.send("OK"));
+    err=> err ? res.status(400).send("NG") : res.send("OK"));
 });
 
 app.post("/login",(req,res)=>{
@@ -96,7 +102,7 @@ app.post("/login",(req,res)=>{
 app.post("/logout",(req,res)=>req.session.destroy(()=>res.send("OK")));
 app.get("/me",(req,res)=>res.json(req.session.user||null));
 
-// ===== 投稿（画像＆リプライ） =====
+// ===== 投稿 =====
 app.post("/post", upload.single("image"), (req,res)=>{
   if(!req.session.user) return res.sendStatus(403);
 
@@ -110,7 +116,21 @@ app.post("/post", upload.single("image"), (req,res)=>{
       img,
       req.body.reply_to || null
     ],
-    ()=>res.send("OK")
+    function(){
+
+      // リプライ通知
+      if(req.body.reply_to){
+        db.get("SELECT user_id FROM posts WHERE id=?",
+        [req.body.reply_to],(e,post)=>{
+          if(post && post.user_id !== req.session.user.id){
+            db.run("INSERT INTO notifications (user_id,from_user,type,post_id) VALUES (?,?,?,?)",
+              [post.user_id, req.session.user.id, "reply", req.body.reply_to]);
+          }
+        });
+      }
+
+      res.send("OK");
+    }
   );
 });
 
@@ -149,7 +169,17 @@ app.post("/like",(req,res)=>{
       [uid,pid],()=>res.send("UNLIKE"));
     }else{
       db.run("INSERT INTO likes (user_id,post_id) VALUES (?,?)",
-      [uid,pid],()=>res.send("LIKE"));
+      [uid,pid],()=>{
+
+        db.get("SELECT user_id FROM posts WHERE id=?",[pid],(e,post)=>{
+          if(post && post.user_id !== uid){
+            db.run("INSERT INTO notifications (user_id,from_user,type,post_id) VALUES (?,?,?,?)",
+              [post.user_id, uid, "like", pid]);
+          }
+        });
+
+        res.send("LIKE");
+      });
     }
   });
 });
@@ -166,7 +196,15 @@ app.post("/follow",(req,res)=>{
       [uid,target],()=>res.send("UNFOLLOW"));
     }else{
       db.run("INSERT INTO follows (follower_id,following_id) VALUES (?,?)",
-      [uid,target],()=>res.send("FOLLOW"));
+      [uid,target],()=>{
+
+        if(target != uid){
+          db.run("INSERT INTO notifications (user_id,from_user,type) VALUES (?,?,?)",
+            [target, uid, "follow"]);
+        }
+
+        res.send("FOLLOW");
+      });
     }
   });
 });
@@ -211,6 +249,20 @@ app.post("/profile",(req,res)=>{
   db.run("UPDATE users SET bio=?, icon=? WHERE id=?",
     [req.body.bio, req.body.icon, req.session.user.id],
     ()=>res.send("OK"));
+});
+
+// ===== 通知 =====
+app.get("/notifications",(req,res)=>{
+  if(!req.session.user) return res.json([]);
+
+  db.all(`
+    SELECT notifications.*, users.username
+    FROM notifications
+    JOIN users ON notifications.from_user = users.id
+    WHERE notifications.user_id=?
+    ORDER BY notifications.created_at DESC
+    LIMIT 30
+  `,[req.session.user.id],(e,rows)=>res.json(rows||[]));
 });
 
 app.listen(process.env.PORT || 3000);
