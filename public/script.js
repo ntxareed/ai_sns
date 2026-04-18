@@ -5,16 +5,16 @@ async function login(){
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({username:user.value,password:pass.value})
   });
-  if(!r.ok) return alert(await r.text());
+  if(!r.ok)return alert("失敗");
   init();
 }
 
 async function register(){
-  const r=await fetch("/register",{method:"POST",
+  await fetch("/register",{method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({username:user.value,password:pass.value})
   });
-  alert(await r.text());
+  alert("OK");
 }
 
 async function logout(){
@@ -25,43 +25,55 @@ async function logout(){
 async function init(){
   const r=await fetch("/me");
   me=await r.json();
-
   if(me){
     auth.style.display="none";
     app.style.display="block";
     loadHome();
-    loadTimetable();
   }
 }
 
+// ===== TL =====
 async function loadHome(){
   const r=await fetch("/timeline");
   const d=await r.json();
 
   home.innerHTML = `
     <input id="postInput">
+    <input type="file" id="fileInput">
     <button onclick="post()">投稿</button>
   ` + d.map(p=>`
-    <div class="card">
-      <b>${p.username}</b><br>
+    <div class="post">
+      <img src="${p.icon||'https://placehold.co/30'}" width="30">
+      <b onclick="openProfile(${p.user_id})">${p.username}</b><br>
       ${p.content}<br>
-      ❤️${p.like_count||0}
+      ${p.image?`<img src="${p.image}" style="max-width:100%">`:''}
+      ❤️${p.like_count}
       <button onclick="like(${p.id})">いいね</button>
-      <button onclick="follow(${p.user_id})">フォロー</button>
+      <button onclick="reply(${p.id})">返信</button>
+      <div id="r-${p.id}"></div>
     </div>
   `).join("");
+
+  setTimeout(()=>d.forEach(p=>loadReplies(p.id)),100);
 }
 
-async function post(){
-  if(!postInput.value) return;
-  await fetch("/post",{method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({content:postInput.value})
-  });
+// ===== 投稿 =====
+async function post(replyTo=null){
+  const form=new FormData();
+  form.append("content",postInput.value);
+  form.append("reply_to",replyTo||"");
+
+  const file=fileInput.files[0];
+  if(file) form.append("image",file);
+
+  await fetch("/post",{method:"POST",body:form});
+
   postInput.value="";
+  fileInput.value="";
   loadHome();
 }
 
+// ===== いいね =====
 async function like(id){
   await fetch("/like",{method:"POST",
     headers:{"Content-Type":"application/json"},
@@ -70,81 +82,68 @@ async function like(id){
   loadHome();
 }
 
+// ===== リプライ =====
+async function reply(id){
+  const text=prompt("返信");
+  if(!text)return;
+
+  await fetch("/post",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({content:text,reply_to:id})
+  });
+
+  loadReplies(id);
+}
+
+async function loadReplies(id){
+  const r=await fetch("/replies/"+id);
+  const d=await r.json();
+
+  document.getElementById("r-"+id).innerHTML=
+    d.map(x=>`<div style="margin-left:20px">${x.username}: ${x.content}</div>`).join("");
+}
+
+// ===== プロフィール =====
+async function openProfile(id){
+  const r=await fetch("/profile/"+id);
+  const d=await r.json();
+
+  home.innerHTML=`
+    <img src="${d.user.icon||'https://placehold.co/80'}" width="80"><br>
+    <h2>${d.user.username}</h2>
+    ${d.user.bio}<br>
+
+    <button onclick="follow(${d.user.id})">
+      ${d.isFollowing?"解除":"フォロー"}
+    </button>
+
+    ${me.id==d.user.id?`
+      <input id="bio" value="${d.user.bio}">
+      <input id="icon" value="${d.user.icon}">
+      <button onclick="saveProfile()">保存</button>
+    `:""}
+
+    <hr>
+
+    ${d.posts.map(p=>`<div class="post">${p.content}</div>`).join("")}
+  `;
+}
+
+async function saveProfile(){
+  await fetch("/profile",{method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({bio:bio.value,icon:icon.value})
+  });
+  alert("保存");
+  init();
+}
+
 async function follow(id){
   await fetch("/follow",{method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({userId:id})
   });
-}
-
-function showHome(){
-  home.style.display="block";
-  dm.style.display="none";
-}
-
-function showDM(){
-  home.style.display="none";
-  dm.style.display="block";
-}
-
-async function sendDM(){
-  if(!dmUser.value || !dmInput.value) return;
-
-  await fetch("/message",{method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({to:dmUser.value,content:dmInput.value})
-  });
-
-  dmInput.value="";
-  loadDM();
-}
-
-async function loadDM(){
-  if(!dmUser.value) return;
-
-  const r=await fetch("/messages/"+dmUser.value);
-  const d=await r.json();
-
-  dmBox.innerHTML=d.map(m=>`
-    <div>${m.from_user}: ${m.content}</div>
-  `).join("");
-}
-
-async function loadTimetable(){
-  const r=await fetch("/timetable");
-  const d=await r.json();
-
-  const days=["月","火","水","木","金"];
-
-  timetable.innerHTML = days.map(day=>{
-    let html=`<b>${day}</b><br>`;
-    for(let i=1;i<=6;i++){
-      const f=d.find(x=>x.day===day&&x.period===i);
-      html+=`<input data-day="${day}" data-period="${i}" value="${f?f.subject:""}"><br>`;
-    }
-    return html;
-  }).join("");
-}
-
-async function saveTimetable(){
-  const inputs=timetable.querySelectorAll("input");
-  let data=[];
-  inputs.forEach(i=>{
-    if(i.value){
-      data.push({
-        day:i.dataset.day,
-        period:Number(i.dataset.period),
-        subject:i.value
-      });
-    }
-  });
-
-  await fetch("/timetable",{method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({data})
-  });
-
-  alert("保存完了");
+  openProfile(id);
 }
 
 init();

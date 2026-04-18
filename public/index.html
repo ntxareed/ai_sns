@@ -6,39 +6,20 @@
 </head>
 <body>
 
-<div id="auth" class="center">
-  <div class="card">
-    <h2>ログイン</h2>
-    <input id="user" placeholder="ユーザー名">
-    <input id="pass" type="password" placeholder="パスワード">
-    <button onclick="login()">ログイン</button>
-    <button onclick="register()">新規登録</button>
-  </div>
+<div style="text-align:center;font-size:12px;opacity:0.6;">
+これはaiで作りました。ばいぶこーでぃんぐ楽しすぎる
+</div>
+
+<div id="auth">
+  <input id="user" placeholder="ユーザー名">
+  <input id="pass" type="password" placeholder="パスワード">
+  <button onclick="login()">ログイン</button>
+  <button onclick="register()">登録</button>
 </div>
 
 <div id="app" style="display:none">
-
-<nav>
-  <button onclick="showHome()">ホーム</button>
-  <button onclick="showDM()">DM</button>
   <button onclick="logout()">ログアウト</button>
-</nav>
-
-<div id="home"></div>
-
-<div id="dm" style="display:none">
-  <input id="dmUser" placeholder="相手ID">
-  <div id="dmBox"></div>
-  <input id="dmInput">
-  <button onclick="sendDM()">送信</button>
-</div>
-
-<div class="card">
-  <h3>時間割</h3>
-  <div id="timetable"></div>
-  <button onclick="saveTimetable()">保存</button>
-</div>
-
+  <div id="home"></div>
 </div>
 
 <script src="script.js"></script>
