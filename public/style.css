@@ -1,3 +1,126 @@
-body { font-family: system-ui; background:#000; color:#fff; }
-.post { border-bottom:1px solid #333; padding:10px; }
-input,button { margin-top:5px; }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui;
+  background: radial-gradient(circle at top, #0f172a, #020617 70%);
+  color: #e2e8f0;
+}
+
+/* 上のメッセージ */
+body > div:first-child {
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.5;
+  padding: 10px;
+}
+
+/* ログアウト */
+button {
+  cursor: pointer;
+}
+
+/* 投稿エリア */
+#home {
+  max-width: 600px;
+  margin: auto;
+}
+
+/* 投稿ボックス */
+#home > input,
+#home > button {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+#postInput {
+  background: #020617;
+  border: 1px solid #334155;
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+#fileInput {
+  color: #94a3b8;
+}
+
+/* 投稿ボタン */
+#home > button {
+  background: linear-gradient(135deg, #3b82f6, #22d3ee);
+  border: none;
+  padding: 12px;
+  border-radius: 999px;
+  color: white;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+#home > button:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+/* 投稿 */
+.post {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid #1e293b;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+
+.post:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(59,130,246,0.2);
+}
+
+/* ユーザー */
+.post b {
+  cursor: pointer;
+  color: #38bdf8;
+}
+
+/* アイコン */
+.post img {
+  border-radius: 50%;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* 投稿画像 */
+.post img[style] {
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+/* いいね・ボタン */
+.post button {
+  margin-top: 6px;
+  margin-right: 6px;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid #3b82f6;
+  color: #93c5fd;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.post button:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+/* リプライ */
+[id^="r-"] {
+  margin-top: 8px;
+  border-left: 2px solid #1e293b;
+  padding-left: 10px;
+}
+
+[id^="r-"] div {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #cbd5f5;
+}
