@@ -6,33 +6,39 @@
 </head>
 <body>
 
-<div id="auth">
-  <h2>ログイン</h2>
-  <input id="user" placeholder="ユーザー名">
-  <input id="pass" type="password" placeholder="パスワード">
-  <button onclick="login()">ログイン</button>
-  <button onclick="register()">新規登録</button>
+<div id="auth" class="center">
+  <div class="card">
+    <h2>ログイン</h2>
+    <input id="user" placeholder="ユーザー名">
+    <input id="pass" type="password" placeholder="パスワード">
+    <button onclick="login()">ログイン</button>
+    <button onclick="register()">新規登録</button>
+  </div>
 </div>
 
 <div id="app" style="display:none">
-  <h3>タイムライン</h3>
 
-  <select id="classFilter" onchange="loadPosts()">
-    <option value="all">全体</option>
-    <option value="A">A組</option>
-    <option value="B">B組</option>
-  </select>
+<nav>
+  <button onclick="showHome()">ホーム</button>
+  <button onclick="showDM()">DM</button>
+  <button onclick="logout()">ログアウト</button>
+</nav>
 
-  <div id="posts"></div>
+<div id="home"></div>
 
-  <div class="postbox">
-    <input id="content" placeholder="投稿する">
-    <select id="class">
-      <option value="A">A組</option>
-      <option value="B">B組</option>
-    </select>
-    <button onclick="post()">送信</button>
-  </div>
+<div id="dm" style="display:none">
+  <input id="dmUser" placeholder="相手ID">
+  <div id="dmBox"></div>
+  <input id="dmInput">
+  <button onclick="sendDM()">送信</button>
+</div>
+
+<div class="card">
+  <h3>時間割</h3>
+  <div id="timetable"></div>
+  <button onclick="saveTimetable()">保存</button>
+</div>
+
 </div>
 
 <script src="script.js"></script>

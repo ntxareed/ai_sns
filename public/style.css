@@ -1,27 +1,47 @@
-
 body {
-  max-width: 600px;
-  margin: auto;
-  font-family: sans-serif;
-  background: #fff;
+  font-family: system-ui;
+  background:#000;
+  color:#fff;
+  margin:0;
 }
 
-input, button, select {
-  padding: 10px;
-  margin: 5px 0;
-  width: 100%;
+.center {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.card {
+  background:#111;
+  padding:20px;
+  border-radius:8px;
+  border:1px solid #333;
+}
+
+input,button {
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+}
+
+button {
+  background:#1d9bf0;
+  border:none;
+  color:#fff;
+}
+
+nav {
+  display:flex;
+  border-bottom:1px solid #333;
+}
+
+nav button {
+  flex:1;
+  background:#000;
 }
 
 .post {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
-}
-
-.postbox {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  max-width: 600px;
-  background: #fff;
+  border-bottom:1px solid #333;
+  padding:10px;
 }
