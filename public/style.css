@@ -1,47 +1,38 @@
 body {
+  margin: 0;
   font-family: system-ui;
-  background:#000;
-  color:#fff;
-  margin:0;
-}
-
-.center {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-
-.card {
-  background:#111;
-  padding:20px;
-  border-radius:8px;
-  border:1px solid #333;
-}
-
-input,button {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-}
-
-button {
-  background:#1d9bf0;
-  border:none;
-  color:#fff;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: #e5e7eb;
 }
 
 nav {
-  display:flex;
-  border-bottom:1px solid #333;
+  display: flex;
+  border-bottom: 1px solid #1e293b;
 }
 
 nav button {
-  flex:1;
-  background:#000;
+  flex: 1;
+  background: transparent;
+  color: #cbd5f5;
+  padding: 12px;
+  border: none;
 }
 
-.post {
-  border-bottom:1px solid #333;
-  padding:10px;
+.card {
+  background: rgba(15,23,42,0.7);
+  padding: 15px;
+  margin: 10px;
+  border-radius: 12px;
+}
+
+input, button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+}
+
+button {
+  background: linear-gradient(135deg,#3b82f6,#06b6d4);
+  color: white;
+  border: none;
 }

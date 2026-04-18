@@ -5,7 +5,7 @@ async function login(){
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({username:user.value,password:pass.value})
   });
-  if(!r.ok)return alert(await r.text());
+  if(!r.ok) return alert(await r.text());
   init();
 }
 
@@ -39,13 +39,13 @@ async function loadHome(){
   const d=await r.json();
 
   home.innerHTML = `
-    <input id="postInput" placeholder="投稿">
+    <input id="postInput">
     <button onclick="post()">投稿</button>
   ` + d.map(p=>`
-    <div class="post">
+    <div class="card">
       <b>${p.username}</b><br>
       ${p.content}<br>
-      ❤️${p.like_count}
+      ❤️${p.like_count||0}
       <button onclick="like(${p.id})">いいね</button>
       <button onclick="follow(${p.user_id})">フォロー</button>
     </div>
@@ -53,10 +53,12 @@ async function loadHome(){
 }
 
 async function post(){
+  if(!postInput.value) return;
   await fetch("/post",{method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({content:postInput.value})
   });
+  postInput.value="";
   loadHome();
 }
 
@@ -86,17 +88,26 @@ function showDM(){
 }
 
 async function sendDM(){
+  if(!dmUser.value || !dmInput.value) return;
+
   await fetch("/message",{method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({to:dmUser.value,content:dmInput.value})
   });
+
+  dmInput.value="";
   loadDM();
 }
 
 async function loadDM(){
+  if(!dmUser.value) return;
+
   const r=await fetch("/messages/"+dmUser.value);
   const d=await r.json();
-  dmBox.innerHTML=d.map(m=>`<div>${m.from_user}:${m.content}</div>`).join("");
+
+  dmBox.innerHTML=d.map(m=>`
+    <div>${m.from_user}: ${m.content}</div>
+  `).join("");
 }
 
 async function loadTimetable(){
@@ -104,6 +115,7 @@ async function loadTimetable(){
   const d=await r.json();
 
   const days=["月","火","水","木","金"];
+
   timetable.innerHTML = days.map(day=>{
     let html=`<b>${day}</b><br>`;
     for(let i=1;i<=6;i++){
@@ -118,18 +130,21 @@ async function saveTimetable(){
   const inputs=timetable.querySelectorAll("input");
   let data=[];
   inputs.forEach(i=>{
-    if(i.value) data.push({
-      day:i.dataset.day,
-      period:Number(i.dataset.period),
-      subject:i.value
-    });
+    if(i.value){
+      data.push({
+        day:i.dataset.day,
+        period:Number(i.dataset.period),
+        subject:i.value
+      });
+    }
   });
 
   await fetch("/timetable",{method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({data})
   });
-  alert("保存");
+
+  alert("保存完了");
 }
 
 init();
