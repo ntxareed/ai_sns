@@ -1,31 +1,189 @@
 body {
-  margin:0;
-  font-family: system-ui;
-  background: radial-gradient(circle at top, #0f172a, #020617);
-  color:white;
+  margin: 0;
+  font-family: 'Segoe UI', system-ui;
+  background: radial-gradient(circle at top, #0f172a, #020617 70%);
+  color: #e2e8f0;
 }
 
+/* 上メッセージ */
 .top-msg {
-  text-align:center;
-  font-size:12px;
-  opacity:0.5;
-  padding:10px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.6;
+  padding: 10px;
 }
 
+/* コンテナ */
+#home {
+  max-width: 600px;
+  margin: auto;
+}
+
+/* ボタン */
+button {
+  cursor: pointer;
+  border: none;
+}
+
+/* 投稿入力 */
+#postInput {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: white;
+  margin-top: 10px;
+}
+
+/* ファイル */
+#fileInput {
+  margin-top: 5px;
+  color: #94a3b8;
+}
+
+/* 投稿ボタン */
+#home > button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  border-radius: 999px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #3b82f6, #22d3ee);
+  color: white;
+  transition: 0.2s;
+}
+
+#home > button:hover {
+  transform: scale(1.03);
+}
+
+/* 投稿カード */
 .post {
-  background: rgba(15,23,42,0.7);
-  margin:10px;
-  padding:10px;
-  border-radius:15px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid #1e293b;
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  transition: 0.2s;
 }
 
-.profile .cover {
-  height:120px;
-  background: linear-gradient(135deg,#3b82f6,#9333ea);
+.post:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(59,130,246,0.3);
 }
 
+/* 名前 */
+.post b {
+  color: #38bdf8;
+  cursor: pointer;
+}
+
+/* アイコン */
+.post img {
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* 投稿画像 */
+.post img[style] {
+  border-radius: 12px;
+  margin-top: 8px;
+  max-width: 100%;
+}
+
+/* アクション */
+.post button {
+  margin-top: 6px;
+  margin-right: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid #3b82f6;
+  color: #93c5fd;
+}
+
+.post button:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+/* リプライ */
+[id^="r-"] {
+  margin-top: 8px;
+  border-left: 2px solid #1e293b;
+  padding-left: 10px;
+}
+
+[id^="r-"] div {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #cbd5f5;
+}
+
+/* ===== プロフィール ===== */
+
+.profile {
+  max-width: 600px;
+  margin: auto;
+}
+
+/* カバー */
+.cover {
+  height: 140px;
+  background: linear-gradient(135deg, #3b82f6, #9333ea, #22d3ee);
+  border-radius: 16px;
+}
+
+/* メイン */
+.profile-main {
+  padding: 15px;
+  position: relative;
+}
+
+/* アイコン */
 .icon {
-  width:80px;
-  border-radius:50%;
-  margin-top:-40px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #020617;
+  position: absolute;
+  top: -45px;
+}
+
+/* 情報 */
+.profile-info {
+  margin-top: 60px;
+}
+
+.profile-info h2 {
+  margin: 0;
+}
+
+/* 自己紹介 */
+.bio {
+  opacity: 0.8;
+  margin-top: 5px;
+}
+
+/* フォロー数 */
+.follow-info {
+  margin-top: 10px;
+  color: #94a3b8;
+}
+
+/* ボタン */
+.profile button {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #3b82f6, #22d3ee);
+  color: white;
+}
+
+/* 通知 */
+h2 {
+  margin-left: 10px;
 }
